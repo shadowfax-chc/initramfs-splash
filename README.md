@@ -29,6 +29,8 @@ Copy images to /etc/splash.
 More info on [Gentoo Wiki](http://wiki.gentoo.org/wiki/Fbsplash).
 
 
+To clean up run `git clean -fdx`.
+
 Images
 ------
 
