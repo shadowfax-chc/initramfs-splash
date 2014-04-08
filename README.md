@@ -22,6 +22,10 @@ Set kernel settings in `/etc/default/grub`.
 
     GRUB_CMDLINE_LINUX="splash=verbose,theme:natural_gentoo console=tty1"
 
+Copy images to /etc/splash.
+
+    sudo cp -r ./etc/splash/natural_gentoo /etc/splash/
+
 More info on [Gentoo Wiki](http://wiki.gentoo.org/wiki/Fbsplash).
 
 
