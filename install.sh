@@ -12,14 +12,14 @@ mkdir -p sbin
 mkdir -p sys
 
 # Create devices
-sudo mknod -m 644 ./dev/console c 5 1
-sudo mknod -m 644 ./dev/null c 1 3
-sudo mknod -m 644 ./dev/tty0 c 4 0
+sudo mknod -m 644 ./dev/console c 5 1 &> /dev/null
+sudo mknod -m 644 ./dev/null c 1 3 &> /dev/null
+sudo mknod -m 644 ./dev/tty0 c 4 0 &> /dev/null
 
 # Add compiled files from host os.
 cp /bin/busybox ./bin/busybox
 cp /sbin/lvm.static ./sbin/lvm
 cp /sbin/fbcondecor_helper ./sbin/fbcondecor_helper
-pushd ./sbin && \
+pushd ./sbin &> /dev/null && \
 ln -sf /sbin/fbcondecor_helper splash_helper
-popd
+popd &> /dev/null
