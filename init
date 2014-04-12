@@ -1,5 +1,12 @@
 #!/bin/busybox sh
 
+
+rescue_shell() {
+    echo "Something went wrong. Dropping you to a shell."
+    busybox --install -s
+    exec /bin/sh
+}
+
 echo "Mounting dev proc sys"
 mount -t devtmpfs none /dev
 mount -t proc none /proc
@@ -11,10 +18,10 @@ lvm lvchange -aly vgsys/lvroot
 lvm lvchange -aly vgsys/lvusr
 
 echo "Mounting root"
-mount -o ro /dev/mapper/vgsys-lvroot /mnt/root
+mount -o ro /dev/vgsys/lvroot /mnt/root || rescuse_shell()
 
 echo "Mounting usr for udev"
-mount -o rw /dev/mapper/vgsys-lvusr /mnt/root/usr
+mount -o rw /dev/vgsys/lvusr /mnt/root/usr || rescuse_shell()
 
 echo "Cleaning up"
 umount /proc
