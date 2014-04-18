@@ -14,14 +14,14 @@ mount -t sysfs none /sys
 
 echo "Enabling lvm"
 lvm vgscan --mknodes
-lvm lvchange -aly vgsys/lvroot
-lvm lvchange -aly vgsys/lvusr
+lvm lvchange -a ly vgsys/lvroot
+lvm lvchange -a ly vgsys/lvusr
 
 echo "Mounting root"
-mount -o ro /dev/vgsys/lvroot /mnt/root || rescuse_shell()
+mount -o ro /dev/mapper/vgsys-lvroot /mnt/root || rescue_shell
 
 echo "Mounting usr for udev"
-mount -o rw /dev/vgsys/lvusr /mnt/root/usr || rescuse_shell()
+mount -o rw /dev/mapper/vgsys-lvusr /mnt/root/usr || rescue_shell
 
 echo "Cleaning up"
 umount /proc
