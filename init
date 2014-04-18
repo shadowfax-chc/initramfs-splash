@@ -18,10 +18,10 @@ lvm lvchange -a ly vgsys/lvroot
 lvm lvchange -a ly vgsys/lvusr
 
 echo "Mounting root"
-mount -o ro /dev/mapper/vgsys-lvroot /mnt/root || rescue_shell
+mount -o ro $(findfs LABEL=/) /mnt/root || rescue_shell
 
 echo "Mounting usr for udev"
-mount -o rw /dev/mapper/vgsys-lvusr /mnt/root/usr || rescue_shell
+mount -o rw $(findfs LABEL=/usr) /mnt/root/usr || rescue_shell
 
 echo "Cleaning up"
 umount /proc
