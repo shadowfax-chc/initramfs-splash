@@ -21,5 +21,5 @@ cp /bin/busybox ./bin/busybox
 cp /sbin/lvm.static ./sbin/lvm
 cp /sbin/fbcondecor_helper ./sbin/fbcondecor_helper
 pushd ./sbin &> /dev/null && \
-ln -sf /sbin/fbcondecor_helper splash_helper
+ln -sf //sbin/fbcondecor_helper splash_helper
 popd &> /dev/null
