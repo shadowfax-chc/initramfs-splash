@@ -14,8 +14,8 @@ mount -t sysfs none /sys
 
 echo "Enabling lvm"
 lvm vgscan --mknodes
-lvm lvchange -a ly vgsys/lvroot
-lvm lvchange -a ly vgsys/lvusr
+lvm lvchange -aly vgsys/lvroot
+lvm lvchange -aly vgsys/lvusr
 
 echo "Mounting root"
 mount -o ro $(findfs LABEL=/) /mnt/root || rescue_shell
