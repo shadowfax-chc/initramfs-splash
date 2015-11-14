@@ -2,6 +2,7 @@
 
 mkdir -p /etc/portage/package.use/
 cat <<DATAEOF > /etc/portage/package.use/initramfs
+sys-apps/util-linux static-libs
 sys-fs/lvm2 static -udev
 DATAEOF
 
