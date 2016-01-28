@@ -1,5 +1,16 @@
 #!/bin/busybox sh
+#
+# Example command line args:
+#
+#   lvm_root=vgsys/lvroot lvm_usr=vgsys/lvusr mount_usr=1 root=LABEL=/ usr=LABEL=/usr
 
+cmdline() {
+    local value
+    value=" $(cat /proc/cmdline) "
+    value="${value##* $1=}"
+    value="${value%% *}"
+    [ "$value" != "" ] && echo "$value"
+}
 
 rescue_shell() {
     echo "Something went wrong. Dropping you to a shell."
@@ -7,21 +18,38 @@ rescue_shell() {
     exec /bin/sh
 }
 
+echo "Parsing args"
+lvm_root=$(cmdline lvmroot)
+: ${lvm_root:="vgsys/lvroot"}
+lvm_usr=$(cmdline lvmusr)
+: ${lvm_usr:="vgsys/lvusr"}
+mount_usr=$(cmdline mount_usr)
+: ${mount_usr:=1}
+root_fs=$(cmdline root)
+: ${root_fs:="LABEL=/"}
+usr_fs=$(cmdline usr)
+: ${usr_fs:="LABEL=/usr"}
+
 echo "Mounting dev proc sys"
 mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
 
-echo "Enabling lvm"
 lvm vgscan --mknodes
-lvm lvchange -aly vgsys/lvroot
-lvm lvchange -aly vgsys/lvusr
+echo "Enabling root lvm $lvm_root"
+lvm lvchange -aly $lvm_root
+if [ $mount_usr -eq 1 ]; then
+    echo "Enabling usr lvm $lvm_usr"
+    lvm lvchange -aly $lvm_usr
+fi
 
-echo "Mounting root"
-mount -o ro $(findfs LABEL=/) /mnt/root || rescue_shell
+echo "Mounting root $root_fs"
+mount -o ro $(findfs $root_fs) /mnt/root || rescue_shell
 
-echo "Mounting usr for udev"
-mount -o rw $(findfs LABEL=/usr) /mnt/root/usr || rescue_shell
+if [ $mount_usr -eq 1 ]; then
+    echo "Mounting usr $usr_fs for udev"
+    mount -o rw $(findfs $usr_fs) /mnt/root/usr || rescue_shell
+fi
 
 echo "Cleaning up"
 umount /proc
