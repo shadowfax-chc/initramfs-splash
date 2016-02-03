@@ -18,22 +18,22 @@ rescue_shell() {
     exec /bin/sh
 }
 
-echo "Parsing args"
-lvm_root=$(cmdline lvmroot)
-: ${lvm_root:="vgsys/lvroot"}
-lvm_usr=$(cmdline lvmusr)
-: ${lvm_usr:="vgsys/lvusr"}
-mount_usr=$(cmdline mount_usr)
-: ${mount_usr:=1}
-root_fs=$(cmdline root)
-: ${root_fs:="LABEL=/"}
-usr_fs=$(cmdline usr)
-: ${usr_fs:="LABEL=/usr"}
-
 echo "Mounting dev proc sys"
 mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
+
+echo "Parsing args"
+lvm_root=$(cmdline "lvm_root")
+: ${lvm_root:="vgsys/lvroot"}
+lvm_usr=$(cmdline "lvm_usr")
+: ${lvm_usr:="vgsys/lvusr"}
+mount_usr=$(cmdline "mount_usr")
+: ${mount_usr:=1}
+root_fs=$(cmdline "root")
+: ${root_fs:="LABEL=/"}
+usr_fs=$(cmdline "usr")
+: ${usr_fs:="LABEL=/usr"}
 
 lvm vgscan --mknodes
 echo "Enabling root lvm $lvm_root"
