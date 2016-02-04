@@ -2,7 +2,7 @@
 #
 # Example command line args:
 #
-#   lvm_root=vgsys/lvroot lvm_usr=vgsys/lvusr mount_usr=1 root=LABEL=/ usr=LABEL=/usr
+#   root_lv=vgsys/lvroot usr_lv=vgsys/lvusr mount_usr=1 real_root=LABEL=/ usr=LABEL=/usr
 
 cmdline() {
     local value
@@ -24,23 +24,23 @@ mount -t proc none /proc
 mount -t sysfs none /sys
 
 echo "Parsing args"
-lvm_root=$(cmdline "lvm_root")
-: ${lvm_root:="vgsys/lvroot"}
-lvm_usr=$(cmdline "lvm_usr")
-: ${lvm_usr:="vgsys/lvusr"}
+root_lv=$(cmdline "root_lv")
+: ${root_lv:="vgsys/lvroot"}
+usr_lv=$(cmdline "usr_lv")
+: ${usr_lv:="vgsys/lvusr"}
 mount_usr=$(cmdline "mount_usr")
 : ${mount_usr:=1}
-root_fs=$(cmdline "root")
+root_fs=$(cmdline "real_root")
 : ${root_fs:="LABEL=/"}
 usr_fs=$(cmdline "usr")
 : ${usr_fs:="LABEL=/usr"}
 
 lvm vgscan --mknodes
-echo "Enabling root lvm $lvm_root"
-lvm lvchange -aly $lvm_root
+echo "Enabling root lvm $root_lv"
+lvm lvchange -aly $root_lv
 if [ $mount_usr -eq 1 ]; then
-    echo "Enabling usr lvm $lvm_usr"
-    lvm lvchange -aly $lvm_usr
+    echo "Enabling usr lvm $usr_lv"
+    lvm lvchange -aly $usr_lv
 fi
 
 echo "Mounting root $root_fs"

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Build lvm2 with static
 mkdir -p /etc/portage/package.use/
 cat <<DATAEOF > /etc/portage/package.use/initramfs
 sys-apps/util-linux static-libs
@@ -29,5 +30,6 @@ sudo mknod -m 644 ./dev/tty0 c 4 0 &> /dev/null
 cp /bin/busybox ./bin/busybox
 cp /sbin/lvm.static ./sbin/lvm
 
+# Rebuild lvm2 as dynamic
 rm /etc/portage/package.use/initramfs
 emerge -1 sys-fs/lvm2
