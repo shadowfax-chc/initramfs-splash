@@ -1,5 +1,39 @@
 #!/bin/bash
 
+name=${0##*/}
+
+function print_help() {
+    echo "usage: $name [options]
+
+optional args:
+
+    -c|--crypt    install cryptsetup
+    -h|--help     print this help."
+}
+
+crypt=0
+OPTS=$(getopt -o ch --long crypt,help -n "$name" -- "$@")
+
+if [[ $? != 0 ]]; then echo "option error" >&2; exit 1; fi
+
+eval set -- "$OPTS"
+
+while true; do
+    case "$1" in
+        -c|--crypt)
+            crypt=1
+            shift;;
+        -h|--help)
+            print_help
+            exit 0
+            ;;
+        --)
+            shift; break;;
+        *)
+            echo "Internal error!"; exit 1;;
+    esac
+done
+
 # Build lvm2 with static
 mkdir -p /etc/portage/package.use/
 cat <<DATAEOF > /etc/portage/package.use/initramfs
@@ -9,7 +43,18 @@ dev-libs/nettle static-libs
 sys-fs/cryptsetup static nettle -gcrypt
 DATAEOF
 
-emerge -1 sys-fs/lvm2 sys-fs/cryptsetup || exit
+pkgs='sys-fs/lvm2'
+
+if [[ $crypt -eq 1 ]]; then
+    # Build cryptsetup with static
+    cat <<DATAEOF >> /etc/portage/package.use/initramfs
+dev-libs/nettle static-libs
+sys-fs/cryptsetup static nettle -gcrypt
+DATAEOF
+pkgs+=' sys-fs/cryptsetup'
+fi
+
+emerge -1 $pkgs || exit
 
 # Make dirs
 mkdir -p ./etc
@@ -38,8 +83,11 @@ mknod -m 640 ./dev/tty1    c 4 1 &> /dev/null
 # Add compiled files from host os.
 cp /bin/busybox ./bin/busybox || exit
 cp /sbin/lvm.static ./sbin/lvm || exit
-cp /sbin/cryptsetup ./sbin/cryptsetup || exit
 
-# Rebuild lvm2 as dynamic and cryptsetup
+if [[ $crypt -eq 1 ]]; then
+    cp /sbin/cryptsetup ./sbin/cryptsetup || exit
+fi
+
+# Rebuild as dynamic
 rm /etc/portage/package.use/initramfs
-emerge -1 sys-fs/lvm2 sys-fs/cryptsetup
+emerge -1 $pkgs
