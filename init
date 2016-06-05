@@ -3,6 +3,7 @@
 # Example command line args:
 #
 #   root_lv=vgsys/lvroot usr_lv=vgsys/lvusr mount_usr=1 real_root=LABEL=/ usr=LABEL=/usr
+#   root_lv=vgsys/lvroot usr_lv=vgsys/lvusr mount_usr=1 real_root=LABEL=/ usr=LABEL=/usr crypt=1 key_fs=LABEL=thumby key=enc.key root_dev=sda1
 
 cmdline() {
     local value
@@ -34,6 +35,27 @@ root_fs=$(cmdline "real_root")
 : ${root_fs:="LABEL=/"}
 usr_fs=$(cmdline "usr")
 : ${usr_fs:="LABEL=/usr"}
+crypt=$(cmdline "crypt")
+: ${crypt:=0}
+key_fs=$(cmdline "key_fs")
+: ${key_fs:="LABEL=thumby"}
+key=$(cmdline "key")
+: ${key_fs:="enc.key"}
+root_dev=$(cmdline "root_dev")
+: ${root_dev:="sda1"}
+
+
+if [ $crypt -eq 1 ]; then
+    key_dev=
+    while [ -z $key_dev ]; do
+        sleep 1
+        key_dev=$(findfs $key_fs)
+    done
+    mount -o ro $key_dev /mnt/tmp || rescue_shell
+    echo "Decrypting root device"
+    cryptsetup luksOpen -d /mnt/tmp/$key /dev/$root_dev lvm || rescue_shell
+    umount /mnt/tmp
+fi
 
 lvm vgscan --mknodes
 echo "Enabling root lvm $root_lv"
