@@ -46,6 +46,8 @@ pkgs='sys-fs/lvm2'
 if [[ $crypt -eq 1 ]]; then
     # Build cryptsetup with static
     cat <<DATAEOF >> /etc/portage/package.use/initramfs
+dev-libs/popt static-libs
+dev-libs/libgpg-error static-libs
 dev-libs/nettle static-libs
 sys-fs/cryptsetup static nettle -gcrypt
 DATAEOF
