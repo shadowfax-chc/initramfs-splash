@@ -1,25 +1,24 @@
-Initramfs
-=========
+# Initramfs
 
 Build simple initramfs that mounts `/` and `/usr` from
 [lvms](http://www.sourceware.org/lvm2/).
 
 
-Setup
------
+## Setup
 
 Install `sys-apps/busybox` with `USE=static`. Use `install.sh`
 to create the initramfs files and directories.  Set `CONFIG_INITRAMFS_SOURCE`
 in kernel config. For example:
 
-    git clone git@github.com:shadowfax-chc/initramfs.git /usr/src/initramfs
-    CONFIG_INITRAMFS_SOURCE="/usr/src/initramfs"
+```
+git clone git@github.com:tmessi/initramfs.git /usr/src/initramfs
+CONFIG_INITRAMFS_SOURCE="/usr/src/initramfs"
+```
 
 To clean up run `git clean -fdx`.
 
 
-Configuration
--------------
+## Configuration
 
 The `init` script can be configured via kernel command line args. The following
 args are available:
@@ -35,4 +34,6 @@ args are available:
 
 For example, to configure via grub, set the following in `/etc/default/grub`:
 
-    GRUB_CMDLINE_LINUX="root_lv=vg0/lvroot usr_lv=vg0/lvusr mount_usr=1 real_root=/dev/mapper/vg0/lvroot usr=/dev/mapper/vg0/lvusr"
+```
+GRUB_CMDLINE_LINUX="root_lv=vg0/lvroot usr_lv=vg0/lvusr mount_usr=1 real_root=/dev/mapper/vg0/lvroot usr=/dev/mapper/vg0/lvusr"
+```

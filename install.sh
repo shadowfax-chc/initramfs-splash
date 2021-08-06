@@ -38,6 +38,7 @@ done
 mkdir -p /etc/portage/package.use/
 cat <<DATAEOF > /etc/portage/package.use/initramfs
 sys-apps/util-linux static-libs
+dev-libs/libaio static-libs
 sys-fs/lvm2 static -udev static-libs
 DATAEOF
 
